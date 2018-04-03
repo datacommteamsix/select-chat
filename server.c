@@ -31,6 +31,7 @@
 #include <stdlib.h>
 #include <strings.h>
 #include <arpa/inet.h>
+#include <string.h>
 #include <unistd.h>
 
 #define SERVER_TCP_PORT 7000	// Default port
@@ -74,7 +75,7 @@ int main (int argc, char **argv)
                 SystemFatal("setsockopt");
 
 	// Bind an address to the socket
-	bzero((char *)&server, sizeof(struct sockaddr_in));
+	memset(&server, 0, sizeof(struct sockaddr_in));
 	server.sin_family = AF_INET;
 	server.sin_port = htons(port);
 	server.sin_addr.s_addr = htonl(INADDR_ANY); // Accept connections from any client
@@ -132,13 +133,13 @@ int main (int argc, char **argv)
      		 }
 
 		for (i = 0; i <= maxi; i++)	// check all clients for data
-     		{
+ 		{
 			if ((sockfd = client[i]) < 0)
 				continue;
 
 			if (FD_ISSET(sockfd, &rset))
-         		{
-         			bp = buf;
+	     	{
+	     		bp = buf;
 				bytes_to_read = BUFLEN;
 				while ((n = read(sockfd, bp, bytes_to_read)) > 0)
 				{
@@ -146,19 +147,20 @@ int main (int argc, char **argv)
 					bytes_to_read -= n;
 				}
 				write(sockfd, buf, BUFLEN);   // echo to client
+				fprintf(stderr, "Echoing: %s\n", &buf);
 				
 				if (n == 0) // connection closed by client
-            			{
+				{
 					printf(" Remote Address:  %s closed connection\n", inet_ntoa(client_addr.sin_addr));
 					close(sockfd);
 					FD_CLR(sockfd, &allset);
-               				client[i] = -1;
-            			}
+	   				client[i] = -1;
+				}
 									            				
 				if (--nready <= 0)
-            				break;        // no more readable descriptors
+	        		break;        // no more readable descriptors
 			}
-     		 }
+ 		 }
    	}
 	return(0);
 }
