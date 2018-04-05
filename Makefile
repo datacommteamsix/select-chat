@@ -1,4 +1,4 @@
-# Makefile for Assignment #2 - Message Queue File Transfer
+# Makefile for Assignment #3 - Chat program
 
 CC=gcc
 CFLAGS=-c -Wall -pedantic
